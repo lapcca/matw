@@ -26,7 +26,7 @@ pub enum ToolError {
 pub trait Tool: Send + Sync {
     fn name(&self) -> &str;
     fn description(&self) -> &str;
-    fn parameters_schema(&self) -> &Value;
+    fn parameters_schema(&self) -> Value;
 
     async fn execute(&self, input: Value) -> Result<ToolOutput, ToolError>;
 }
