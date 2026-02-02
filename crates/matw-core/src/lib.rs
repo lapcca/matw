@@ -9,3 +9,4 @@ pub mod error;
 pub use role::Role;
 pub use content::Content;
 pub use message::Message;
+pub use error::{MatwError, Result};
