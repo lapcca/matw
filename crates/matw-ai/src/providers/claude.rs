@@ -4,15 +4,15 @@ use futures::stream;
 use reqwest::Client;
 use std::time::Duration;
 
-const DEFAULT_BASE_URL: &str = "https://api.moonshot.cn/v1";
+const DEFAULT_BASE_URL: &str = "https://api.anthropic.com/v1";
 
-pub struct KimiProvider {
+pub struct ClaudeProvider {
     _api_key: String,
     _base_url: String,
     _client: Client,
 }
 
-impl KimiProvider {
+impl ClaudeProvider {
     pub fn new(api_key: String, base_url: Option<String>) -> Self {
         let client = Client::builder()
             .timeout(Duration::from_secs(120))
@@ -25,16 +25,12 @@ impl KimiProvider {
             _client: client,
         }
     }
-
-    pub fn base_url(&self) -> &str {
-        &self._base_url
-    }
 }
 
 #[async_trait]
-impl super::super::AIProvider for KimiProvider {
+impl super::super::AIProvider for ClaudeProvider {
     fn name(&self) -> &str {
-        "kimi"
+        "claude"
     }
 
     async fn stream_completion(
@@ -42,7 +38,7 @@ impl super::super::AIProvider for KimiProvider {
         _request: CompletionRequest,
     ) -> AIResult<ChunkStream> {
         let stream = stream::once(async {
-            Ok(Chunk::Delta("Kimi response".to_string()))
+            Ok(Chunk::Delta("Claude response".to_string()))
         });
         Ok(ChunkStream::new(Box::pin(stream)))
     }
@@ -51,10 +47,8 @@ impl super::super::AIProvider for KimiProvider {
         &self,
         _request: CompletionRequest,
     ) -> AIResult<CompletionResponse> {
-        // Kimi uses OpenAI-compatible API
-        // Implementation similar to GLM but with OpenAI format
         Ok(CompletionResponse {
-            content: "Kimi response".to_string(),
+            content: "Claude response".to_string(),
             tool_uses: vec![],
             stop_reason: StopReason::EndTurn,
             usage: Usage {
@@ -71,14 +65,8 @@ mod tests {
     use crate::provider::AIProvider;
 
     #[test]
-    fn test_kimi_provider_name() {
-        let provider = KimiProvider::new("test-key".to_string(), None);
-        assert_eq!(provider.name(), "kimi");
-    }
-
-    #[test]
-    fn test_default_base_url() {
-        let provider = KimiProvider::new("test-key".to_string(), None);
-        assert_eq!(provider.base_url(), "https://api.moonshot.cn/v1");
+    fn test_claude_provider_name() {
+        let provider = ClaudeProvider::new("test-key".to_string(), None);
+        assert_eq!(provider.name(), "claude");
     }
 }
