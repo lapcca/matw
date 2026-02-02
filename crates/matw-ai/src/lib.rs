@@ -8,5 +8,5 @@ pub use provider::{
     AIProvider, Chunk, ChunkStream, CompletionRequest, CompletionResponse,
     StopReason, ToolDefinition, ToolUse, Usage,
 };
-pub use providers::GLMProvider;
+pub use providers::{GLMProvider, KimiProvider};
 pub use error::{AIError, AIResult};
