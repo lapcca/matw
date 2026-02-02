@@ -1,10 +1,9 @@
 [package]
-name = "matw-tui"
+name = "matw-agent"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-matw-agent = { path = "../matw-agent" }
 matw-core = { path = "../matw-core" }
 matw-ai = { path = "../matw-ai" }
 matw-tools = { path = "../matw-tools" }
@@ -12,12 +11,6 @@ matw-tools = { path = "../matw-tools" }
 tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-anyhow = { workspace = true }
-
-ratatui = "0.28"
-crossterm = "0.28"
-ansi-to-tui = "6.0"
-unicode-width = "0.2"
-
-[dev-dependencies]
-tempfile = { workspace = true }
+thiserror = { workspace = true }
+async-trait = "0.1"
+futures = { workspace = true }

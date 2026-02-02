@@ -8,6 +8,8 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use matw_agent::Agent;
+use matw_ai::providers::GLMProvider;
 use matw_core::Session;
 use matw_tools::all_tools;
 use ratatui::{backend::CrosstermBackend, Terminal};
@@ -29,7 +31,11 @@ pub async fn run() -> anyhow::Result<()> {
         .map(|t| std::sync::Arc::from(t) as std::sync::Arc<dyn matw_tools::Tool>)
         .collect();
 
-    let mut app = App::new(session, tools);
+    // Create provider and agent
+    let provider = GLMProvider::new("test-key".to_string(), None);
+    let agent = Agent::new(provider, tools.clone());
+
+    let mut app = App::new(session, tools).with_agent(agent);
     let mut events = EventHandler::new(250);
 
     // Main loop
@@ -42,7 +48,7 @@ pub async fn run() -> anyhow::Result<()> {
                     match key.code {
                         KeyCode::Char(c) => app.handle_input(c),
                         KeyCode::Backspace => app.handle_backspace(),
-                        KeyCode::Enter => app.submit_input(),
+                        KeyCode::Enter => app.submit_input().await,
                         KeyCode::Esc | KeyCode::Char('q') => app.quit(),
                         _ => {}
                     }

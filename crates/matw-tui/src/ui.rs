@@ -3,6 +3,7 @@
 //! Provides ratatui-based rendering for the terminal UI.
 
 use crate::App;
+use matw_ai::AIProvider;
 use matw_core::{Content, Role};
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
@@ -17,7 +18,7 @@ pub struct UI;
 
 impl UI {
     /// Draw the complete UI
-    pub fn draw(f: &mut Frame, app: &App) {
+    pub fn draw<P: AIProvider>(f: &mut Frame, app: &App<P>) {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .margin(1)
@@ -29,7 +30,7 @@ impl UI {
     }
 
     /// Draw messages area
-    fn draw_messages(f: &mut Frame, app: &App, area: Rect) {
+    fn draw_messages<P: AIProvider>(f: &mut Frame, app: &App<P>, area: Rect) {
         let mut lines = Vec::new();
 
         for msg in &app.messages {
@@ -90,7 +91,7 @@ impl UI {
     }
 
     /// Draw input area
-    fn draw_input(f: &mut Frame, app: &App, area: Rect) {
+    fn draw_input<P: AIProvider>(f: &mut Frame, app: &App<P>, area: Rect) {
         let input = Paragraph::new(app.input.as_str())
             .block(
                 Block::default()

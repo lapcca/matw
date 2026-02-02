@@ -2,13 +2,15 @@
 //!
 //! Manages the application state including session, input, messages, and UI state.
 
+use matw_agent::Agent;
+use matw_ai::AIProvider;
 use matw_core::Message;
 use matw_core::Session;
 use matw_tools::Tool;
 use std::sync::Arc;
 
 /// Main application state
-pub struct App {
+pub struct App<P: AIProvider> {
     /// Current session
     pub session: Session,
     /// Current input buffer
@@ -21,9 +23,11 @@ pub struct App {
     pub tools: Vec<Arc<dyn Tool>>,
     /// Current status message
     pub status: String,
+    /// Optional agent for AI processing
+    pub agent: Option<Agent<P>>,
 }
 
-impl App {
+impl<P: AIProvider> App<P> {
     /// Create a new application
     pub fn new(session: Session, tools: Vec<Arc<dyn Tool>>) -> Self {
         Self {
@@ -33,7 +37,14 @@ impl App {
             should_quit: false,
             tools,
             status: "Ready".to_string(),
+            agent: None,
         }
+    }
+
+    /// Set the agent for AI processing
+    pub fn with_agent(mut self, agent: Agent<P>) -> Self {
+        self.agent = Some(agent);
+        self
     }
 
     /// Handle character input
@@ -47,7 +58,7 @@ impl App {
     }
 
     /// Submit the current input
-    pub fn submit_input(&mut self) {
+    pub async fn submit_input(&mut self) {
         if self.input.is_empty() {
             return;
         }
@@ -57,6 +68,18 @@ impl App {
         self.session.add_message(msg);
         self.input.clear();
         self.status = "Processing...".to_string();
+
+        // Run agent if available
+        if let Some(ref agent) = self.agent {
+            if let Err(e) = agent.process(&mut self.session).await {
+                self.status = format!("Error: {}", e);
+                self.messages.push(Message::new_assistant(format!("Error: {}", e)));
+            } else {
+                self.status = "Ready".to_string();
+                // Update messages from session
+                self.messages = self.session.messages().to_vec();
+            }
+        }
     }
 
     /// Quit the application
@@ -73,6 +96,7 @@ impl App {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use matw_ai::providers::GLMProvider;
     use matw_tools::tools::ReadTool;
     use tempfile::TempDir;
 
@@ -82,7 +106,7 @@ mod tests {
         let session = Session::new(temp.path().to_path_buf());
         let tools: Vec<Arc<dyn Tool>> = vec![Arc::new(ReadTool::new())];
 
-        let app = App::new(session, tools);
+        let app: App<GLMProvider> = App::new(session, tools);
 
         assert_eq!(app.input, "");
         assert!(!app.should_quit);
@@ -94,7 +118,7 @@ mod tests {
     fn test_handle_input() {
         let temp = TempDir::new().unwrap();
         let session = Session::new(temp.path().to_path_buf());
-        let mut app = App::new(session, vec![]);
+        let mut app: App<GLMProvider> = App::new(session, vec![]);
 
         app.handle_input('h');
         app.handle_input('i');
@@ -107,7 +131,7 @@ mod tests {
     fn test_handle_backspace() {
         let temp = TempDir::new().unwrap();
         let session = Session::new(temp.path().to_path_buf());
-        let mut app = App::new(session, vec![]);
+        let mut app: App<GLMProvider> = App::new(session, vec![]);
 
         app.input = "hello".to_string();
         app.handle_backspace();
@@ -115,14 +139,14 @@ mod tests {
         assert_eq!(app.input, "hell");
     }
 
-    #[test]
-    fn test_submit_input() {
+    #[tokio::test]
+    async fn test_submit_input() {
         let temp = TempDir::new().unwrap();
         let session = Session::new(temp.path().to_path_buf());
-        let mut app = App::new(session, vec![]);
+        let mut app: App<GLMProvider> = App::new(session, vec![]);
 
         app.input = "test message".to_string();
-        app.submit_input();
+        app.submit_input().await;
 
         assert_eq!(app.input, "");
         assert_eq!(app.messages.len(), 1);
@@ -134,7 +158,7 @@ mod tests {
     fn test_quit() {
         let temp = TempDir::new().unwrap();
         let session = Session::new(temp.path().to_path_buf());
-        let mut app = App::new(session, vec![]);
+        let mut app: App<GLMProvider> = App::new(session, vec![]);
 
         app.quit();
 
@@ -145,7 +169,7 @@ mod tests {
     fn test_cursor_position() {
         let temp = TempDir::new().unwrap();
         let session = Session::new(temp.path().to_path_buf());
-        let mut app = App::new(session, vec![]);
+        let mut app: App<GLMProvider> = App::new(session, vec![]);
 
         assert_eq!(app.cursor_position(), 0);
 

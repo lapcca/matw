@@ -1363,6 +1363,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "matw-agent"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "futures",
+ "matw-ai",
+ "matw-core",
+ "matw-tools",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+]
+
+[[package]]
 name = "matw-ai"
 version = "0.1.0"
 dependencies = [
@@ -1449,6 +1464,7 @@ dependencies = [
  "ansi-to-tui",
  "anyhow",
  "crossterm",
+ "matw-agent",
  "matw-ai",
  "matw-core",
  "matw-tools",
