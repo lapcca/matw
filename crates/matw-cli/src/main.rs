@@ -30,6 +30,10 @@ struct Args {
     /// Configuration file path
     #[arg(short, long)]
     config: Option<PathBuf>,
+
+    /// Run in simple mode (without TUI)
+    #[arg(long)]
+    simple: bool,
 }
 
 #[tokio::main]
@@ -53,12 +57,21 @@ async fn main() -> Result<()> {
     // Determine working directory
     let working_dir = args.dir.unwrap_or_else(|| std::env::current_dir().unwrap());
 
-    // Initialize session
+    if args.simple {
+        // Simple mode: just print session info
+        run_simple_mode(working_dir)?;
+    } else {
+        // TUI mode: run terminal UI
+        matw_tui::run().await?;
+    }
+
+    Ok(())
+}
+
+fn run_simple_mode(working_dir: PathBuf) -> Result<()> {
     let session = initialize_session(working_dir)?;
 
     println!("MATW v{} - AI-powered coding assistant", env!("CARGO_PKG_VERSION"));
-    println!("Provider: {}", config.provider);
-    println!("Model: {}", config.model);
     println!();
 
     if let Some(git_info) = session.context().git_info() {
@@ -75,7 +88,7 @@ async fn main() -> Result<()> {
 
     println!("Session ID: {}", session.id());
     println!();
-    println!("Interactive mode not yet implemented. Use --help for options.");
+    println!("Use TUI mode for interactive session (omit --simple flag)");
 
     Ok(())
 }
@@ -98,5 +111,13 @@ mod tests {
         assert!(args.is_ok());
         let args = args.unwrap();
         assert_eq!(args.dir, Some(PathBuf::from("/tmp")));
+    }
+
+    #[test]
+    fn test_args_simple_mode() {
+        let args = Args::try_parse_from(["matw", "--simple"]);
+        assert!(args.is_ok());
+        let args = args.unwrap();
+        assert!(args.simple);
     }
 }

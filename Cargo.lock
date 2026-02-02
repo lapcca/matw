@@ -1072,6 +1072,7 @@ dependencies = [
  "matw-ai",
  "matw-core",
  "matw-tools",
+ "matw-tui",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
@@ -1115,6 +1116,7 @@ name = "matw-tui"
 version = "0.1.0"
 dependencies = [
  "ansi-to-tui",
+ "anyhow",
  "crossterm",
  "matw-ai",
  "matw-core",

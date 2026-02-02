@@ -11,6 +11,7 @@ path = "src/main.rs"
 matw-core = { path = "../matw-core" }
 matw-ai = { path = "../matw-ai" }
 matw-tools = { path = "../matw-tools" }
+matw-tui = { path = "../matw-tui" }
 
 tokio = { workspace = true }
 serde = { workspace = true }
