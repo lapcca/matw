@@ -46,10 +46,11 @@ pub async fn run() -> anyhow::Result<()> {
             match event {
                 Event::Key(key) => {
                     match key.code {
+                        KeyCode::Char('q') if app.input.is_empty() => app.quit(),
+                        KeyCode::Esc => app.quit(),
                         KeyCode::Char(c) => app.handle_input(c),
                         KeyCode::Backspace => app.handle_backspace(),
                         KeyCode::Enter => app.submit_input().await,
-                        KeyCode::Esc | KeyCode::Char('q') => app.quit(),
                         _ => {}
                     }
                 }
