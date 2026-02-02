@@ -7,3 +7,4 @@ pub mod content;
 pub mod error;
 
 pub use role::Role;
+pub use content::Content;
