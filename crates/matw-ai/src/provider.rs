@@ -58,6 +58,12 @@ pub struct ChunkStream {
     inner: Pin<Box<dyn Stream<Item = Result<Chunk, AIError>> + Send>>,
 }
 
+impl ChunkStream {
+    pub fn new(stream: Pin<Box<dyn Stream<Item = Result<Chunk, AIError>> + Send>>) -> Self {
+        Self { inner: stream }
+    }
+}
+
 impl Stream for ChunkStream {
     type Item = Result<Chunk, AIError>;
 
