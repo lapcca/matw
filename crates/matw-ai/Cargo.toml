@@ -1,0 +1,15 @@
+[package]
+name = "matw-ai"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+matw-core = { path = "../matw-core" }
+tokio = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+async-trait = "0.1"
+pin-project = "1.1"
+reqwest = { version = "0.12", features = ["json", "stream"] }

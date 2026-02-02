@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "crates/matw-core",
+    "crates/matw-ai",
 ]
 resolver = "2"
 
