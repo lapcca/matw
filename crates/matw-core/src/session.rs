@@ -28,6 +28,15 @@ impl Session {
         }
     }
 
+    pub fn with_context(context: Context) -> Self {
+        Self {
+            id: Uuid::new_v4(),
+            messages: Vec::new(),
+            context,
+            state: SessionState::Active,
+        }
+    }
+
     pub fn id(&self) -> Uuid {
         self.id
     }

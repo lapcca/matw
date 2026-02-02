@@ -3,6 +3,7 @@ members = [
     "crates/matw-core",
     "crates/matw-ai",
     "crates/matw-tools",
+    "crates/matw-cli",
 ]
 resolver = "2"
 
