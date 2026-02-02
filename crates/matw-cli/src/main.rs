@@ -1,9 +1,11 @@
 mod config;
+mod logo;
 mod session;
 
 use anyhow::Result;
 use clap::Parser;
 use config::Config;
+use logo::{print_logo, print_logo_with_version};
 use session::initialize_session;
 use std::path::PathBuf;
 
@@ -61,7 +63,10 @@ async fn main() -> Result<()> {
         // Simple mode: just print session info
         run_simple_mode(working_dir)?;
     } else {
-        // TUI mode: run terminal UI
+        // TUI mode: print logo first, then run terminal UI
+        print_logo();
+        println!("  Starting TUI... Press 'q' to quit, 'Esc' to exit\n");
+        std::thread::sleep(std::time::Duration::from_millis(800));
         matw_tui::run().await?;
     }
 
@@ -69,9 +74,11 @@ async fn main() -> Result<()> {
 }
 
 fn run_simple_mode(working_dir: PathBuf) -> Result<()> {
+    // Print large CLI-style logo with version
+    print_logo_with_version(env!("CARGO_PKG_VERSION"));
+
     let session = initialize_session(working_dir)?;
 
-    println!("MATW v{} - AI-powered coding assistant", env!("CARGO_PKG_VERSION"));
     println!();
 
     if let Some(git_info) = session.context().git_info() {

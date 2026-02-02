@@ -3,6 +3,7 @@
 //! Provides command-line interface and session management for MATW.
 
 pub mod config;
+pub mod logo;
 pub mod session;
 
 pub use config::Config;
