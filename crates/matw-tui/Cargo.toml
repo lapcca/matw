@@ -1,0 +1,21 @@
+[package]
+name = "matw-tui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+matw-core = { path = "../matw-core" }
+matw-ai = { path = "../matw-ai" }
+matw-tools = { path = "../matw-tools" }
+
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+ratatui = "0.28"
+crossterm = "0.28"
+ansi-to-tui = "6.0"
+unicode-width = "0.2"
+
+[dev-dependencies]
+tempfile = { workspace = true }
