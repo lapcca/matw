@@ -5,3 +5,5 @@ pub mod message;
 pub mod role;
 pub mod content;
 pub mod error;
+
+pub use role::Role;
